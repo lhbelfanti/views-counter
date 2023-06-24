@@ -20,8 +20,9 @@ func disableCache(w http.ResponseWriter) {
 
 var mutex = &sync.Mutex{}
 
-// Increment the file and return the current number
-func incrementFile(filename string) int {
+// getCurrentCount returns the current view count
+// If the parameter incrementByOne is true, it will increment the current count
+func getCurrentCount(filename string, incrementByOne bool) int {
 	// If the file exists
 	if _, err := os.Stat(filename); err == nil {
 		mutex.Lock()
@@ -46,24 +47,27 @@ func incrementFile(filename string) int {
 			fmt.Println("Failed to convert file content to integer.")
 			os.Exit(1)
 		}
-		count++
 
-		// Delete the contents
-		if err := file.Truncate(0); err != nil {
-			fmt.Println("Failed to truncate the file.")
-			os.Exit(1)
-		}
+		if incrementByOne {
+			count++
 
-		// Go to the beginning of the file
-		if _, err := file.Seek(0, 0); err != nil {
-			fmt.Println("Failed to seek to the beginning of the file.")
-			os.Exit(1)
-		}
+			// Delete the contents
+			if err := file.Truncate(0); err != nil {
+				fmt.Println("Failed to truncate the file.")
+				os.Exit(1)
+			}
 
-		// Write the new count
-		if _, err := file.WriteString(strconv.Itoa(count)); err != nil {
-			fmt.Println("Failed to write to the file.")
-			os.Exit(1)
+			// Go to the beginning of the file
+			if _, err := file.Seek(0, 0); err != nil {
+				fmt.Println("Failed to seek to the beginning of the file.")
+				os.Exit(1)
+			}
+
+			// Write the new count
+			if _, err := file.WriteString(strconv.Itoa(count)); err != nil {
+				fmt.Println("Failed to write to the file.")
+				os.Exit(1)
+			}
 		}
 
 		// Return the current file contents
@@ -139,36 +143,93 @@ func curlGetContents(url string) string {
 	return string(body)
 }
 
+func incrementViewCount(w http.ResponseWriter, r *http.Request) {
+	// Disable cache
+	disableCache(w)
+
+	// Set the content type to be an image
+	w.Header().Set("Content-type", "image/svg+xml")
+
+	// Increment the file and get the current count
+	message := getCurrentCount("views.txt", true)
+
+	// Set parameters for the shields.io URL
+	label := "Views"
+	labelColor := "640464"
+	logo := "eye"
+	logoColor := "white"
+	counter := shortNumber(float64(message), 2)
+	counterColor := "7c007c"
+	style := "for-the-badge"
+
+	// Build the URL with an SVG image of the view counter
+	url := fmt.Sprintf("https://custom-icon-badges.demolab.com/badge/%s-%s-%s.svg?labelColor=%s&logo=%s&logoColor=%s&style=%s",
+		label, counter, counterColor, labelColor, logo, logoColor, style)
+
+	// Get the contents of the URL
+	response := curlGetContents(url)
+
+	// Output the response (SVG image)
+	fmt.Fprintf(w, response)
+}
+
+func createBadge(message int) string {
+	// Set parameters for the shields.io URL
+	label := "Views"
+	labelColor := "640464"
+	logo := "eye"
+	logoColor := "white"
+	counter := shortNumber(float64(message), 2)
+	counterColor := "7c007c"
+	style := "for-the-badge"
+
+	// Build the URL with an SVG image of the view counter
+	url := fmt.Sprintf("https://custom-icon-badges.demolab.com/badge/%s-%s-%s.svg?labelColor=%s&logo=%s&logoColor=%s&style=%s",
+		label, counter, counterColor, labelColor, logo, logoColor, style)
+
+	// Get the contents of the URL
+	return curlGetContents(url)
+}
+
+// incrementCount HTTP handler for '/'
+func incrementCount(w http.ResponseWriter, r *http.Request) {
+	// Disable cache
+	disableCache(w)
+
+	// Set the content type to be an image
+	w.Header().Set("Content-type", "image/svg+xml")
+
+	// Increment the file and get the current count
+	message := getCurrentCount("views.txt", true)
+
+	response := createBadge(message)
+
+	// Output the response (SVG image)
+	fmt.Fprintf(w, response)
+}
+
+// getCurrentViewCount HTTP handler for '/count'
+func getCurrentViewCount(w http.ResponseWriter, r *http.Request) {
+	// Disable cache
+	disableCache(w)
+
+	// Set the content type to be an image
+	w.Header().Set("Content-type", "image/svg+xml")
+
+	// Increment the file and get the current count
+	message := getCurrentCount("views.txt", false)
+
+	response := createBadge(message)
+
+	// Output the response (SVG image)
+	fmt.Fprintf(w, response)
+}
+
 func main() {
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		// Disable cache
-		disableCache(w)
+	/* Handlers */
+	http.HandleFunc("/", incrementCount)
 
-		// Set the content type to be an image
-		w.Header().Set("Content-type", "image/svg+xml")
-
-		// Increment the file and get the current count
-		message := incrementFile("views.txt")
-
-		// Set parameters for the shields.io URL
-		label := "Views"
-		labelColor := "640464"
-		logo := "eye"
-		logoColor := "white"
-		counter := shortNumber(float64(message), 2)
-		counterColor := "7c007c"
-		style := "for-the-badge"
-
-		// Build the URL with an SVG image of the view counter
-		url := fmt.Sprintf("https://custom-icon-badges.demolab.com/badge/%s-%s-%s.svg?labelColor=%s&logo=%s&logoColor=%s&style=%s",
-			label, counter, counterColor, labelColor, logo, logoColor, style)
-
-		// Get the contents of the URL
-		response := curlGetContents(url)
-
-		// Output the response (SVG image)
-		fmt.Fprintf(w, response)
-	})
+	http.HandleFunc("/count", getCurrentViewCount)
 
 	http.HandleFunc("/favicon.ico", func(w http.ResponseWriter, r *http.Request) {})
 
