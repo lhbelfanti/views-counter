@@ -15,7 +15,7 @@
 
 This repository contains a Golang app that counts each visit my Github profile has.
 
-It is hosted in Vercel.
+It is hosted in [Railway](https://railway.app/).
 
 ---
 ## License

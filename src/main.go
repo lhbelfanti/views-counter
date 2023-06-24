@@ -1,4 +1,4 @@
-package handler
+package main
 
 import (
 	"fmt"
@@ -7,8 +7,6 @@ import (
 	"os"
 	"strconv"
 	"sync"
-
-	. "github.com/tbxark/g4vercel"
 )
 
 // Disable cache so that the image will be fetched every time
@@ -141,24 +139,8 @@ func curlGetContents(url string) string {
 	return string(body)
 }
 
-// Handler http handler for Vercel hosting
-func Handler(w http.ResponseWriter, r *http.Request) {
-	server := New()
-
-	server.Use(Recovery(func(err interface{}, c *Context) {
-		if httpError, ok := err.(HttpError); ok {
-			c.JSON(httpError.Status, H{
-				"message": httpError.Error(),
-			})
-		} else {
-			message := fmt.Sprintf("%s", err)
-			c.JSON(500, H{
-				"message": message,
-			})
-		}
-	}))
-
-	server.GET("/", func(context *Context) {
+func main() {
+	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		// Disable cache
 		disableCache(w)
 
@@ -188,5 +170,18 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, response)
 	})
 
-	server.GET("/favicon.ico", func(context *Context) {})
+	http.HandleFunc("/favicon.ico", func(w http.ResponseWriter, r *http.Request) {})
+
+	port := os.Getenv("PORT")
+
+	if port == "" {
+		port = "3000"
+	}
+
+	// Start the HTTP server
+	err := http.ListenAndServe(":"+port, nil)
+	if err != nil {
+		fmt.Println("Failed to start the HTTP server.")
+		os.Exit(1)
+	}
 }
