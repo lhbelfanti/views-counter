@@ -21,7 +21,7 @@ func GetCurrentViewCountHTTPHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-type", "image/svg+xml")
 
 	// Get current count
-	message := db.GetCurrentCountFromFile("views.txt", true)
+	message := db.GetCurrentCountFromFile("views.txt", false)
 
 	response := badge.Create(message)
 
