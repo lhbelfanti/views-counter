@@ -8,23 +8,28 @@ import (
 	"views-counter/src/db"
 )
 
-// GetCurrentViewCountHTTPHandler HTTP handler for '/count'
-func GetCurrentViewCountHTTPHandler(w http.ResponseWriter, r *http.Request) {
-	// Disable cache
-	timestamp := "Mon, 01 Jan 2000 00:00:00 GMT"
-	w.Header().Set("Expires", timestamp)
-	w.Header().Set("Last-Modified", timestamp)
-	w.Header().Set("Pragma", "no-cache")
-	w.Header().Set("Cache-Control", "no-cache, must-revalidate")
+// GetCurrentCounterHTTPHandler HTTP handler for '/count'
+type GetCurrentCounterHTTPHandler func(w http.ResponseWriter, r *http.Request)
 
-	// Set the content type to be an image
-	w.Header().Set("Content-type", "image/svg+xml")
+// MakeGetCurrentCountHTTPHandler Creates a new GetCurrentCounterHTTPHandler
+func MakeGetCurrentCountHTTPHandler(database db.CounterPersistence, createBadge badge.Create) GetCurrentCounterHTTPHandler {
+	return func(w http.ResponseWriter, r *http.Request) {
+		// Disable cache
+		timestamp := "Mon, 01 Jan 2000 00:00:00 GMT"
+		w.Header().Set("Expires", timestamp)
+		w.Header().Set("Last-Modified", timestamp)
+		w.Header().Set("Pragma", "no-cache")
+		w.Header().Set("Cache-Control", "no-cache, must-revalidate")
 
-	// Get current count
-	message := db.GetCurrentCountFromFile("views.txt", false)
+		// Set the content type to be an image
+		w.Header().Set("Content-type", "image/svg+xml")
 
-	response := badge.Create(message)
+		// Get current count
+		message := database.GetCurrentCount()
 
-	// Output the response (SVG image)
-	fmt.Fprintf(w, response)
+		response := createBadge(message)
+
+		// Output the response (SVG image)
+		fmt.Fprintf(w, response)
+	}
 }

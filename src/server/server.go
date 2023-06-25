@@ -5,15 +5,25 @@ import (
 	"net/http"
 	"os"
 
+	"views-counter/src/badge"
 	"views-counter/src/counter"
+	"views-counter/src/db"
 )
 
 func Init() {
+
+	/* Dependencies */
+	fileDatabase := db.NewFileDatabase()
+	createBadge := badge.MakeCreate()
+
+	/* Create handlers functions */
+	getCurrentCountHTTPHandler := counter.MakeGetCurrentCountHTTPHandler(fileDatabase, createBadge)
+	updateCurrentCountHTTPHandler := counter.MakeUpdateCurrentCountHTTPHandler(fileDatabase, createBadge)
+
 	/* Handlers */
-	http.HandleFunc("/", counter.IncrementCountHTTPHandler)
-
-	http.HandleFunc("/count", counter.GetCurrentViewCountHTTPHandler)
-
+	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {})
+	http.HandleFunc("/count", getCurrentCountHTTPHandler)
+	http.HandleFunc("/increment", updateCurrentCountHTTPHandler)
 	http.HandleFunc("/favicon.ico", func(w http.ResponseWriter, r *http.Request) {})
 
 	port := os.Getenv("PORT")

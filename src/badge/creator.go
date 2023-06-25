@@ -9,22 +9,26 @@ import (
 	"views-counter/src/formatter"
 )
 
-func Create(message int) string {
-	// Set parameters for the shields.io URL
-	label := "Views"
-	labelColor := "640464"
-	logo := "eye"
-	logoColor := "white"
-	counter := formatter.ShortNumber(float64(message), 2)
-	counterColor := "7c007c"
-	style := "for-the-badge"
+type Create func(int) string
 
-	// Build the URL with an SVG image of the view counter
-	url := fmt.Sprintf("https://custom-icon-badges.demolab.com/badge/%s-%s-%s.svg?labelColor=%s&logo=%s&logoColor=%s&style=%s",
-		label, counter, counterColor, labelColor, logo, logoColor, style)
+func MakeCreate() Create {
+	return func(message int) string {
+		// Set parameters for the shields.io URL
+		label := "Views"
+		labelColor := "640464"
+		logo := "eye"
+		logoColor := "white"
+		counter := formatter.ShortNumber(float64(message), 2)
+		counterColor := "7c007c"
+		style := "for-the-badge"
 
-	// Get the contents of the URL
-	return curlGetContents(url)
+		// Build the URL with an SVG image of the view counter
+		url := fmt.Sprintf("https://custom-icon-badges.demolab.com/badge/%s-%s-%s.svg?labelColor=%s&logo=%s&logoColor=%s&style=%s",
+			label, counter, counterColor, labelColor, logo, logoColor, style)
+
+		// Get the contents of the URL
+		return curlGetContents(url)
+	}
 }
 
 // Get contents of a URL with HTTP GET
