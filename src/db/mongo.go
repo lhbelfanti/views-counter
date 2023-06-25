@@ -21,11 +21,7 @@ type MongoDatabase struct {
 
 // NewMongoDatabase creates a new *MongoDatabase
 func NewMongoDatabase() *MongoDatabase {
-	user := os.Getenv("MONGOUSER")
-	password := os.Getenv("MONGOPASSWORD")
-	host := os.Getenv("MONGOHOST")
-	port := os.Getenv("MONGOPORT")
-	uri := fmt.Sprintf("mongodb://%s:%s@:%s:%s", user, password, host, port)
+	uri := os.Getenv("MONGO_URL")
 
 	mongoDB := &MongoDatabase{}
 
