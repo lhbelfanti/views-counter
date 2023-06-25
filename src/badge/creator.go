@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/lhbelfanti/views-counter/src/formatter"
+	"views-counter/src/formatter"
 )
 
 func Create(message int) string {

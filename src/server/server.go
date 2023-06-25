@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/lhbelfanti/views-counter/src/counter"
+	"views-counter/src/counter"
 )
 
 func Init() {

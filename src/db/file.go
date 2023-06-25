@@ -10,9 +10,9 @@ import (
 
 var mutex = &sync.Mutex{}
 
-// GetCurrentCount returns the current view count
+// GetCurrentCountFromFile returns the current view count
 // If the parameter incrementByOne is true, it will increment the current count
-func GetCurrentCount(filename string, incrementByOne bool) int {
+func GetCurrentCountFromFile(filename string, incrementByOne bool) int {
 	// If the file exists
 	if _, err := os.Stat(filename); err == nil {
 		mutex.Lock()

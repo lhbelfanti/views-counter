@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/lhbelfanti/views-counter/src/server"
+	"views-counter/src/server"
 )
 
 func main() {

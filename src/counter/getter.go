@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/lhbelfanti/views-counter/src/badge"
-	"github.com/lhbelfanti/views-counter/src/db"
+	"views-counter/src/badge"
+	"views-counter/src/db"
 )
 
 // GetCurrentViewCountHTTPHandler HTTP handler for '/count'
