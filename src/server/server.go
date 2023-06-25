@@ -11,18 +11,21 @@ import (
 )
 
 func Init() {
-
 	/* Dependencies */
-	fileDatabase := db.NewFileDatabase()
+	//fileDatabase := db.NewFileDatabase()
+
+	mongoDatabase := db.NewMongoDatabase()
+	defer mongoDatabase.Close()
+
 	createBadge := badge.MakeCreate()
 
 	/* Create handlers functions */
-	getCurrentCountHTTPHandler := counter.MakeGetCurrentCountHTTPHandler(fileDatabase, createBadge)
-	updateCurrentCountHTTPHandler := counter.MakeUpdateCurrentCountHTTPHandler(fileDatabase, createBadge)
+	getCurrentCountHTTPHandler := counter.MakeGetCurrentCountHTTPHandler(mongoDatabase, createBadge)
+	updateCurrentCountHTTPHandler := counter.MakeUpdateCurrentCountHTTPHandler(mongoDatabase, createBadge)
 
 	/* Handlers */
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {})
-	http.HandleFunc("/count", getCurrentCountHTTPHandler)
+	http.HandleFunc("/views", getCurrentCountHTTPHandler)
 	http.HandleFunc("/increment", updateCurrentCountHTTPHandler)
 	http.HandleFunc("/favicon.ico", func(w http.ResponseWriter, r *http.Request) {})
 

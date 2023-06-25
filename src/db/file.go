@@ -14,10 +14,54 @@ type FileDatabase struct {
 	mutex *sync.Mutex
 }
 
+// NewFileDatabase creates a new *FileDatabase
+// It also initializes the mutex
 func NewFileDatabase() *FileDatabase {
 	return &FileDatabase{
 		mutex: &sync.Mutex{},
 	}
+}
+
+// GetCurrentCount returns the current view count
+func (fileDB *FileDatabase) GetCurrentCount() int {
+	fileDB.mutex.Lock()
+	defer fileDB.mutex.Unlock()
+
+	file, err := openFile()
+	if err == nil {
+		defer file.Close()
+		count := getCount(file)
+
+		return count
+	}
+
+	// Create the file if it doesn't exist
+	count := 1
+	createFile(count)
+
+	return count
+}
+
+// UpdateCurrentCount updates the current view count and returns it
+func (fileDB *FileDatabase) UpdateCurrentCount() int {
+	fileDB.mutex.Lock()
+	defer fileDB.mutex.Unlock()
+
+	file, err := openFile()
+	if err == nil {
+		defer file.Close()
+
+		count := getCount(file)
+		count = updateCount(count, file)
+
+		return count
+	}
+
+	// Create the file if it doesn't exist
+	count := 1
+	createFile(count)
+
+	return count
 }
 
 func openFile() (*os.File, error) {
@@ -81,46 +125,4 @@ func createFile(initialCount int) {
 		fmt.Println("Failed to create the file.")
 		os.Exit(1)
 	}
-}
-
-// GetCurrentCount returns the current view count
-func (fileDB *FileDatabase) GetCurrentCount() int {
-	fileDB.mutex.Lock()
-	defer fileDB.mutex.Unlock()
-
-	file, err := openFile()
-	if err == nil {
-		defer file.Close()
-		count := getCount(file)
-
-		return count
-	}
-
-	// Create the file if it doesn't exist
-	count := 1
-	createFile(count)
-
-	return count
-}
-
-// UpdateCurrentCount updates the current view count and returns it
-func (fileDB *FileDatabase) UpdateCurrentCount() int {
-	fileDB.mutex.Lock()
-	defer fileDB.mutex.Unlock()
-
-	file, err := openFile()
-	if err == nil {
-		defer file.Close()
-
-		count := getCount(file)
-		count = updateCount(count, file)
-
-		return count
-	}
-
-	// Create the file if it doesn't exist
-	count := 1
-	createFile(count)
-
-	return count
 }
