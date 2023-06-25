@@ -15,7 +15,15 @@
 
 This repository contains a Golang app that counts each visit my Github profile has.
 
-It is hosted in [Railway](https://railway.app/).
+It is hosted in [Railway](https://railway.app/), and uses Mongo DB to persist the number of views.
+
+## How it looks like
+
+How many times has my profile been visited?
+
+<a href="https://github.com/lhbelfanti/">
+    <img alt="views" title="GitHub profile views" src="https://views-counter-lhbelfanti.up.railway.app/views"/>
+</a>
 
 ---
 ## License
