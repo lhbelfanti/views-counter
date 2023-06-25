@@ -16,7 +16,6 @@ import (
 type MongoDatabase struct {
 	client *mongo.Client
 	ctx    context.Context
-	cancel context.CancelFunc
 }
 
 // NewMongoDatabase creates a new *MongoDatabase
@@ -25,14 +24,13 @@ func NewMongoDatabase() *MongoDatabase {
 
 	mongoDB := &MongoDatabase{}
 
-	client, ctx, cancel, err := mongoDB.Connect(uri)
+	client, ctx, err := mongoDB.Connect(uri)
 	if err != nil {
 		panic(err)
 	}
 
 	mongoDB.client = client
 	mongoDB.ctx = ctx
-	mongoDB.cancel = cancel
 
 	return mongoDB
 }
@@ -93,9 +91,6 @@ func (mongoDB *MongoDatabase) UpdateCurrentCount() int {
 // Close method to close resources.
 // This method closes mongoDB connection and cancel context.
 func (mongoDB *MongoDatabase) Close() {
-	// CancelFunc to cancel to context
-	defer mongoDB.cancel()
-
 	// client provides a method to close a mongoDB connection.
 	defer func() {
 		// client.Disconnect method also has deadline.
@@ -106,18 +101,19 @@ func (mongoDB *MongoDatabase) Close() {
 	}()
 }
 
-// Connect returns mongo.Client, context.Context, context.CancelFunc and error.
+// Connect returns mongo.Client, context.Context and error.
 // mongo.Client will be used for further database operation.
 // context.Context will be used set deadlines for process.
-// context.CancelFunc will be used to cancel context and resource associated with it.
-func (mongoDB *MongoDatabase) Connect(uri string) (*mongo.Client, context.Context, context.CancelFunc, error) {
-	// ctx will be used to set deadline for process, here deadline will of 30 seconds.
-	ctx, cancel := context.WithTimeout(context.Background(), 300*time.Second)
+func (mongoDB *MongoDatabase) Connect(uri string) (*mongo.Client, context.Context, error) {
+	ctx := context.TODO()
+	ops := options.Client().ApplyURI(uri)
+	maxConnIdleTime := 60 * time.Second
+	ops.MaxConnIdleTime = &maxConnIdleTime
 
 	// mongo.Connect return mongo.Client method
-	client, err := mongo.Connect(ctx, options.Client().ApplyURI(uri))
+	client, err := mongo.Connect(ctx, ops)
 
-	return client, ctx, cancel, err
+	return client, ctx, err
 }
 
 // Ping is used to ping the mongoDB, return error if any
