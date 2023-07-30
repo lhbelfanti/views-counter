@@ -15,7 +15,7 @@
 
 This repository contains a Golang app that counts each visit my Github profile has.
 
-It is hosted in [Railway](https://railway.app/), and uses Mongo DB to persist the number of views.
+It is hosted in [Netlify](https://app.netlify.com/), and uses Mongo DB to persist the number of views.
 
 ## How it looks like
 
