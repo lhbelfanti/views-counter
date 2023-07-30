@@ -27,9 +27,10 @@ func Init() {
 
 	/* Handlers */
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {})
+	http.HandleFunc("/favicon.ico", func(w http.ResponseWriter, r *http.Request) {})
+
 	http.HandleFunc("/api/views", getCurrentCountHTTPHandler)
 	http.HandleFunc("/api/increment", updateCurrentCountHTTPHandler)
-	http.HandleFunc("/favicon.ico", func(w http.ResponseWriter, r *http.Request) {})
 
 	port := os.Getenv("PORT")
 
