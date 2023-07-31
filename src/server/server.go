@@ -19,7 +19,7 @@ func Init() {
 	defer mongoDatabase.Close()
 
 	/* Create handlers functions */
-	getCurrentCountHTTPHandler := counter.MakeGetCurrentCountHTTPHandler()
+	getCurrentCountHTTPHandler := counter.MakeGetCurrentCountHTTPHandler(mongoDatabase)
 	updateCurrentCountHTTPHandler := counter.MakeUpdateCurrentCountHTTPHandler(mongoDatabase)
 
 	/* Handlers */
