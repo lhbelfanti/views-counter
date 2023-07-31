@@ -10,10 +10,13 @@
 
         <script type="module">
             (async () => {
-                let data = await fetch("/api/increment").then(rsp => rsp.toString());
+                let data = await fetch("/api/increment").then(rsp => {
+                    console.log(JSON.stringify(rsp));
+                    return rsp.toString()
+                });
                 let counter = document.getElementById("counter");
                 counter.innerHTML = data;
-                console.log(counter);
+
             })();
         </script>
     </g>
