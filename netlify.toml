@@ -1,5 +1,5 @@
 [build]
-  command = "./build.sh"
+  command = "make build"
   functions = "./functions"
 
 [build.environment]
