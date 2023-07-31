@@ -28,6 +28,12 @@ func MakeUpdateCurrentCountHTTPHandler(database db.CounterPersistence) UpdateCur
 // MakeUpdateCurrentCountAndReturnBadgeHTTPHandler return a new UpdateCurrentCountAndReturnBadgeHTTPHandler
 func MakeUpdateCurrentCountAndReturnBadgeHTTPHandler(database db.CounterPersistence, createBadge badge.Create) UpdateCurrentCountAndReturnBadgeHTTPHandler {
 	return func(w http.ResponseWriter, r *http.Request) {
+		timestamp := "Mon, 01 Jan 2000 00:00:00 GMT"
+		w.Header().Set("Expires", timestamp)
+		w.Header().Set("Last-Modified", timestamp)
+		w.Header().Set("Pragma", "no-cache")
+		w.Header().Set("Cache-Control", "no-cache, must-revalidate")
+
 		w.Header().Set("Content-type", "image/svg+xml")
 
 		// Increment the file and get the current count
