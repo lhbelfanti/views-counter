@@ -16,7 +16,6 @@ func MakeUpdateCurrentCountHTTPHandler(database db.CounterPersistence) UpdateCur
 		// Increment the file and get the current count
 		counter := database.UpdateCurrentCount()
 
-		// Output the response (SVG image)
 		fmt.Fprintf(w, "%d", counter)
 	}
 }

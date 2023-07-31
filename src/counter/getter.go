@@ -15,7 +15,7 @@ func MakeGetCurrentCountHTTPHandler(database db.CounterPersistence) GetCurrentCo
 	return func(w http.ResponseWriter, r *http.Request) {
 		// Get current count
 		counter := database.GetCurrentCount()
-		// Output the response (SVG image)
+		
 		fmt.Fprintf(w, "%d", counter)
 	}
 }

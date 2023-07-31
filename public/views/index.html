@@ -12,8 +12,10 @@
             (async () => {
                 let data = await fetch("/api/views").then(rsp => {
                     console.log(rsp)
-                    return rsp
+                    return rsp.json()
                 });
+
+                console.log(data)
                 let counter = document.getElementById("counter");
                 counter.innerHTML = data;
             })();
