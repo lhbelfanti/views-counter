@@ -22,7 +22,7 @@ It is hosted in [Netlify](https://app.netlify.com/), and uses Mongo DB to persis
 How many times has my profile been visited?
 
 <a href="https://github.com/lhbelfanti/">
-    <img alt="views" title="GitHub profile views" src="https://main--lhbelfanti-views-counter.netlify.app/views"/>
+    <img alt="views" title="GitHub profile views" src="https://main--lhbelfanti-views-counter.netlify.app/api/views/badge"/>
 </a>
 
 ---
