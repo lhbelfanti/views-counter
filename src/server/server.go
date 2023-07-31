@@ -7,7 +7,6 @@ import (
 
 	"github.com/carlmjohnson/gateway"
 
-	"views-counter/src/badge"
 	"views-counter/src/counter"
 	"views-counter/src/db"
 )
@@ -19,18 +18,16 @@ func Init() {
 	mongoDatabase := db.NewMongoDatabase()
 	defer mongoDatabase.Close()
 
-	createBadge := badge.MakeCreate()
-
 	/* Create handlers functions */
-	getCurrentCountHTTPHandler := counter.MakeGetCurrentCountHTTPHandler(mongoDatabase, createBadge)
-	updateCurrentCountHTTPHandler := counter.MakeUpdateCurrentCountHTTPHandler(mongoDatabase, createBadge)
+	getCurrentCountHTTPHandler := counter.MakeGetCurrentCountHTTPHandler(mongoDatabase)
+	updateCurrentCountHTTPHandler := counter.MakeUpdateCurrentCountHTTPHandler(mongoDatabase)
 
 	/* Handlers */
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {})
-	http.HandleFunc("/favicon.ico", func(w http.ResponseWriter, r *http.Request) {})
+	http.Handle("/views", http.FileServer(http.Dir("./public/views")))
+	http.Handle("/increment", http.FileServer(http.Dir("./public/increment")))
 
-	http.HandleFunc("/api/views", getCurrentCountHTTPHandler)
-	http.HandleFunc("/api/increment", updateCurrentCountHTTPHandler)
+	http.Handle("/api/views", http.Handler(http.HandlerFunc(getCurrentCountHTTPHandler)))
+	http.Handle("/api/increment", http.Handler(http.HandlerFunc(updateCurrentCountHTTPHandler)))
 
 	port := os.Getenv("PORT")
 

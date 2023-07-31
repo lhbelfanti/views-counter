@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"net/http"
 
-	"views-counter/src/badge"
 	"views-counter/src/db"
 )
 
@@ -12,24 +11,12 @@ import (
 type GetCurrentCounterHTTPHandler func(w http.ResponseWriter, r *http.Request)
 
 // MakeGetCurrentCountHTTPHandler Creates a new GetCurrentCounterHTTPHandler
-func MakeGetCurrentCountHTTPHandler(database db.CounterPersistence, createBadge badge.Create) GetCurrentCounterHTTPHandler {
+func MakeGetCurrentCountHTTPHandler(database db.CounterPersistence) GetCurrentCounterHTTPHandler {
 	return func(w http.ResponseWriter, r *http.Request) {
-		// Disable cache
-		timestamp := "Mon, 01 Jan 2000 00:00:00 GMT"
-		w.Header().Set("Expires", timestamp)
-		w.Header().Set("Last-Modified", timestamp)
-		w.Header().Set("Pragma", "no-cache")
-		w.Header().Set("Cache-Control", "no-cache, must-revalidate")
-
-		// Set the content type to be an image
-		w.Header().Set("Content-type", "image/svg+xml")
-
 		// Get current count
-		message := database.GetCurrentCount()
-
-		response := createBadge(message)
+		counter := database.GetCurrentCount()
 
 		// Output the response (SVG image)
-		fmt.Fprintf(w, response)
+		fmt.Fprintf(w, "%d", counter)
 	}
 }
