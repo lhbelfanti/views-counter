@@ -1,13 +1,8 @@
 [build]
   command = "./build.sh"
-  functions = "functions"
-  publish = "public"
+  functions = "./functions"
 
 [build.environment]
-  GO_IMPORT_PATH = "github.com/lhbelfanti/views-counter"
+  GO_IMPORT_PATH = "github.com/lhbelfanti/views-counter/functions"
   GO111MODULE = "on"
-
-[[redirects]]
-  from = "/api/*"
-  to = "/.netlify/functions/views-counter/:splat"
-  status = 200
+  GOBIN = "/opt/build/repo/functions"
